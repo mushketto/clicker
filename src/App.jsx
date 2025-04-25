@@ -1,54 +1,37 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useTelegramInit } from './hooks/tg';
+import { useFirebase } from './hooks/firebase';
+import './App.css';
+
+
+import MainPage from './pages/mainpage';
+import UpgradePage from './pages/upgrade';
+import LeaderboardPage from './pages/leaderboard';
+import ShopPage from './pages/ShopPage';
+import SettingsPage from './pages/SettingsPage'; 
 
 function App() {
-  const [count, setCount] = useState(0);
+  //const userId = 7777777777; 
+  const userId = useTelegramInit();
+  const { initialized, db } = useFirebase();
 
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand();
-    }
-  }, []);
+  const isReady = userId && initialized && db;
 
-  const increment = () => setCount((prev) => prev + 1);
-  const reset = () => setCount(0);
+  if (!isReady) {
+    return <div className="wrapper"><p>Завантаження…</p></div>;
+  }
 
   return (
-    <div style={styles.container}>
-      <h1>Клікер 🖱️</h1>
-      <p>Кількість кліків: <strong>{count}</strong></p>
-      <button style={styles.btn} onClick={increment}>+1</button>
-      <button style={styles.reset} onClick={reset}>Скинути</button>
-    </div>
+    <Router basename="/clicker">
+      <Routes>
+        <Route path="/" element={<MainPage userId={userId} db={db} initialized={initialized} />} />
+        <Route path="/upgrade" element={<UpgradePage userId={userId} db={db} initialized={initialized} />} />
+        <Route path="/leaderboard" element={<LeaderboardPage userId={userId} db={db} initialized={initialized} />} />
+        <Route path="/shop" element={<ShopPage userId={userId} db={db} initialized={initialized} />} />
+        <Route path="/settings" element={<SettingsPage db={db} userId={userId} initialized={initialized} />} />      
+      </Routes>
+    </Router>
   );
 }
-
-const styles = {
-  container: {
-    textAlign: 'center',
-    marginTop: '50px',
-    fontFamily: 'Arial, sans-serif',
-    padding: '10px',
-  },
-  btn: {
-    padding: '10px 20px',
-    fontSize: '20px',
-    backgroundColor: '#2AABEE',
-    color: 'white',
-    border: 'none',
-    borderRadius: '10px',
-    margin: '10px',
-    cursor: 'pointer',
-  },
-  reset: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    backgroundColor: '#ccc',
-    border: 'none',
-    borderRadius: '10px',
-    cursor: 'pointer',
-  },
-};
 
 export default App;
