@@ -276,21 +276,46 @@ export function useMainStats({ db, userId, initialized }) {
 
   useEffect(() => {
     if (!isReady) return;
-
+  
     const fetchSkins = async () => {
       try {
-        const ownedSkinsDoc = await getStatsRef('ownedSkins').get();
-        const selectedSkinDoc = await getStatsRef('selectedSkin').get();
-
-        setOwnedSkins(ownedSkinsDoc.exists ? ownedSkinsDoc.data().value || [] : []);
-        setSelectedSkin(selectedSkinDoc.exists ? selectedSkinDoc.data().value || null : null);
+        const ownedSkinsRef = getStatsRef('ownedSkins');
+        const selectedSkinRef = getStatsRef('selectedSkin');
+        const [ownedSkinsDoc, selectedSkinDoc] = await Promise.all([
+          ownedSkinsRef.get(),
+          selectedSkinRef.get()
+        ]);
+  
+        const serverTime = firebase.firestore.FieldValue.serverTimestamp();
+  
+        // Якщо немає скінів — встановлюємо "default" як куплений
+        if (!ownedSkinsDoc.exists) {
+          await ownedSkinsRef.set({
+            value: ['default'],
+            createdAt: serverTime
+          });
+          setOwnedSkins(['default']);
+        } else {
+          setOwnedSkins(ownedSkinsDoc.data().value || []);
+        }
+  
+        // Якщо немає вибраного скіну — встановлюємо "default"
+        if (!selectedSkinDoc.exists) {
+          await selectedSkinRef.set({
+            value: 'default',
+            createdAt: serverTime
+          });
+          setSelectedSkin('default');
+        } else {
+          setSelectedSkin(selectedSkinDoc.data().value || null);
+        }
       } catch (err) {
         console.error('[STORE] Помилка при завантаженні скінів:', err);
       }
     };
-
+  
     fetchSkins();
-  }, [isReady]);
+  }, [isReady]);  
 
   const buySkin = async (skinId, cost) => {
     if (ownedSkins.includes(skinId)) return;

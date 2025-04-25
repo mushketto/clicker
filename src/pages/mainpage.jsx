@@ -4,17 +4,26 @@ import logoImg from '../assets/logo.png';
 import '../App.css';
 import { useMainStats } from '../hooks/useMainStats';
 
-import defaultClickImg from '../assets/click.png';
-import fireSkin from '../assets/up3.png';
-import iceSkin from '../assets/up1.png';
-import defaultSkin from '../assets/up3.png';
-import goldSkin from '../assets/up1.png';
+import defaultClickImg from '../assets/diamondpurple.png';
+import blueSkin from '../assets/bluediamond.png';
+import pinkSkin from '../assets/pinkdiamond.png';
+import rubySkin from '../assets/rubydiamond.png';
+import greenSkin from '../assets/greendiamond.png';
+import orangeSkin from '../assets/orangediamond.png';
+import gradient1Skin from '../assets/diamondgradiend1.png';
+import gradient2Skin from '../assets/diamondgradiend2.png';
+import gradient3Skin from '../assets/diamondgradiend3.png';
 
 const skinImages = {
-  default: defaultSkin,
-  fire: fireSkin,
-  ice: iceSkin,
-  gold: goldSkin,
+  default: defaultClickImg,
+  blue: blueSkin,
+  pink: pinkSkin,
+  ruby: rubySkin,
+  green: greenSkin,
+  orange: orangeSkin,
+  gradient1: gradient1Skin,
+  gradient2: gradient2Skin,
+  gradient3: gradient3Skin,
 };
 
 function preloadImageWithCache(skinKey) {
@@ -178,7 +187,6 @@ export default function MainPage({ userId, db, initialized }) {
                   touchAction: 'none',
                   WebkitUserSelect: 'none',
                   WebkitTouchCallout: 'none',
-                  transition: 'transform 0.1s ease',
                 }}
                 role="button"
                 aria-disabled={energy === 0}

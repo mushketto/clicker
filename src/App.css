@@ -70,7 +70,7 @@ img {
 
 .clicker-img {
   display: block;                  /* дозволяє margin auto працювати */
-  margin: 0 auto 10px;             /* центрування по горизонталі + відступ знизу */
+  margin: 0 auto;             /* центрування по горизонталі + відступ знизу */
   width: 160px;                   /* задає розмір зображення */
   height: 160px;                  /* або auto, якщо пропорції важливі */
   cursor: pointer;               /* показує, що елемент клікабельний */
@@ -83,9 +83,15 @@ img {
   -webkit-user-select: none;
   pointer-events: auto;
 
-  border-radius: 12px;           /* закруглені краї */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); /* тінь */
-  object-fit: cover;             /* обрізає зайве без спотворення */
+
+  object-fit: cover;           
+
+  clip-path: polygon(
+    15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
+  );
+  -webkit-clip-path: polygon(
+    15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
+  );
 }
 
 .clicker-img:active {
@@ -221,6 +227,8 @@ img {
   width: 100%;
   max-width: 800px;
   padding: 0 16px;
+  flex: 1;
+  overflow: hidden;
 }
 
 .leaderboard-header,
@@ -268,7 +276,7 @@ img {
 }
 
 .leaderboard-container {
-  max-height: 65vh; /* або 60vh, як зручно */
+  flex:1;
   overflow-y: auto;
   margin-top: 6px;
   display: flex;
@@ -496,7 +504,7 @@ img {
   position: absolute;
   font-size: 20px;
   font-weight: bold;
-  color: #9333ea;
+  color: #ffffff;
   animation: floatUp 1s ease-out forwards;
   opacity: 0;
   z-index: 10;
@@ -518,7 +526,6 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 
@@ -598,6 +605,7 @@ img {
 }
 
 .shop-grid {
+  
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
@@ -608,7 +616,7 @@ img {
 
 .shop-title-img{
   width: 100%;
-  max-width: 300px;
+  max-width: 250px;
   height: auto;
   object-fit: contain;
 }
@@ -659,4 +667,14 @@ img {
   color: #4caf50;
   font-weight: bold;
   font-size: 10px;
+}
+
+.shop-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 0px;
 }

@@ -11,8 +11,8 @@ import ShopPage from './pages/ShopPage';
 import SettingsPage from './pages/SettingsPage'; 
 
 function App() {
-  //const userId = 7777777777; 
-  const userId = useTelegramInit();
+  const userId = 7777777777; 
+  //const userId = useTelegramInit();
   const { initialized, db } = useFirebase();
 
   const isReady = userId && initialized && db;
