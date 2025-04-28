@@ -30,10 +30,12 @@ export default function ShopPage({ db, userId, initialized }) {
     { id: 'ruby', title: 'Рубін', image: rubySkin, cost: 10000 },
     { id: 'green', title: 'Зелений', image: greenSkin, cost: 10000 },
     { id: 'orange', title: 'Помаранчевий', image: orangeSkin, cost: 10000 },
-    { id: 'gradient1', title: 'Градіент', image: gradient1Skin, cost: 999999999999999 },
-    { id: 'gradient2', title: 'Градіент', image: gradient2Skin, cost: 999999999999999 },
-    { id: 'gradient3', title: 'Градіент', image: gradient3Skin, cost: 999999999999999 },
+    { id: 'gradient1', title: 'Градіент', image: gradient1Skin},
+    { id: 'gradient2', title: 'Градіент', image: gradient2Skin},
+    { id: 'gradient3', title: 'Градіент', image: gradient3Skin},
   ];
+
+  const achievementSkins = ['gradient1', 'gradient2', 'gradient3'];
 
   useEffect(() => {
     const fetchSkins = async () => {
@@ -46,17 +48,22 @@ export default function ShopPage({ db, userId, initialized }) {
   }, [db, userId]);
 
   const handleBuySkin = async (skin) => {
+  
     if (ownedSkins.includes(skin.id)) {
       await db.collection('users').doc(String(userId)).collection('stats').doc('selectedSkin')
         .set({ value: skin.id, updatedAt: new Date() }, { merge: true });
       setSelectedSkin(skin.id);
       return;
     }
-
+  
+    if (achievementSkins.includes(skin.id)) {
+      return;
+    }
+  
     if (count >= skin.cost) {
       const newBalance = count - skin.cost;
       const newOwned = [...ownedSkins, skin.id];
-
+  
       await Promise.all([
         db.collection('users').doc(String(userId)).collection('stats').doc('count')
           .set({ value: newBalance, updatedAt: new Date() }, { merge: true }),
@@ -65,7 +72,7 @@ export default function ShopPage({ db, userId, initialized }) {
         db.collection('users').doc(String(userId)).collection('stats').doc('selectedSkin')
           .set({ value: skin.id, updatedAt: new Date() }, { merge: true })
       ]);
-
+  
       setCount(newBalance);
       setOwnedSkins(newOwned);
       setSelectedSkin(skin.id);
@@ -73,7 +80,7 @@ export default function ShopPage({ db, userId, initialized }) {
       setShowErrorModal(true);
     }
   };
-
+  
   return (
     <>
       <div className="header">
@@ -86,9 +93,7 @@ export default function ShopPage({ db, userId, initialized }) {
       </div>
 
       <div className="wrapper">
-        <div className="logo-image-wrapper">
-          <img src={logoShop} alt="Магазин" className="shop-title-img" />
-        </div>
+      <div className="shop-title-img"style={{ backgroundImage: `url(${logoShop})` }} />
         <p className="shop-balance">Монети: <strong>{count}</strong></p>
         <div className= "shop-container">
             <div className="shop-grid">
@@ -98,13 +103,27 @@ export default function ShopPage({ db, userId, initialized }) {
                 className={`shop-card ${selectedSkin === skin.id ? 'selected' : ''}`}
                 onClick={() => handleBuySkin(skin)}
                 >
-                <img src={skin.image} alt={skin.title} className="shop-card-img" />
-                <p className="shop-card-title">{skin.title}</p>
-                {ownedSkins.includes(skin.id) ? (
-                    <p className="shop-owned">{selectedSkin === skin.id ? 'Вибрано ✅' : 'Натисни, щоб вибрати'}</p>
-                ) : (
-                    <p className="shop-cost">Купити за {skin.cost} монет</p>
-                )}
+                <div className="shop-card-img" style={{ backgroundImage: `url(${skin.image})` }}/>
+                <div className="shop-card-content">
+                  <p className="shop-card-title">{skin.title}</p>
+                  {ownedSkins.includes(skin.id) ? (
+                    <p className="shop-owned">{selectedSkin === skin.id ? 'Обрано ✅' : 'Натисни, щоб обрати'}</p>
+                  ) : (
+                    skin.id.startsWith('gradient') ? (
+                      <div className="shop-achievement">
+                        <p>Для отримання</p><p>виконайте досягнення:</p>
+                        <p><strong>
+                          {skin.id === 'gradient1' && '1 000 000 кліків'}
+                          {skin.id === 'gradient2' && 'Множник lvl 20'}
+                          {skin.id === 'gradient3' && 'Кількісь енергії lvl 20'}
+                        </strong></p>
+                      </div>
+                    ) : (
+                      <p className="shop-cost">Купити за {skin.cost} монет</p>
+                    )
+                  )}
+
+                  </div>
                 </div>
             ))}
             </div>

@@ -123,23 +123,29 @@ img {
   background-color: #9b59b6;
 }
 
-
+.upgrade-image-wrapper {
+  width: 100%;
+  max-width: 300px;
+  height: 80px;
+  margin: 20px auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
 .button-group {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
   margin-top: auto; /* робить push вниз */
   margin-bottom: 20px;
   flex-wrap: nowrap;
 }
 
-
-
 .menu-button {
   background-color: #8e44ad;
   color: white;
-  padding: 10px 16px;
+  padding: 10px 10px;
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -234,7 +240,7 @@ img {
 .leaderboard-header,
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 60px 1fr 1fr; /* 3 колонки: номер, ім'я, зароблено */
+  grid-template-columns: 30px 2fr 1fr; /* 3 колонки: номер, ім'я, зароблено */
   gap: 12px;
   padding: 12px 24px;
   border-radius: 12px;
@@ -270,9 +276,13 @@ img {
 }
 
 .leaderboard-title-img {
-  width: 300px; /* або будь-який розмір, який тобі підходить */
-  margin: 0 auto 16px;
-  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: 80px;
+  margin: 0 auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .leaderboard-container {
@@ -390,12 +400,6 @@ img {
   color: #ccc;
 }
 
-
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fadeIn 0.3s ease-out forwards;
-}
 
 @keyframes fadeIn {
   to {
@@ -530,12 +534,16 @@ img {
 
 
 .logo-image-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  padding: 0 16px;
+
+  width: 100%;
+  max-width: 300px;
+  height: 80px;
+  margin: 20px auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
+
 
 
 .main-title-img {
@@ -573,6 +581,14 @@ img {
 
 .upgrade-card:active {
   transform: scale(0.9);         /* ефект натискання */
+}
+
+.upgrade-card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 
@@ -614,12 +630,16 @@ img {
 }
 
 
-.shop-title-img{
+.shop-title-img{ 
   width: 100%;
-  max-width: 250px;
-  height: auto;
-  object-fit: contain;
+  max-width: 300px;
+  height: 80px;
+  margin: 20px auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
+
 .shop-card {
   -webkit-tap-highlight-color: transparent;
   background-color: #121212;
@@ -632,9 +652,16 @@ img {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
   max-width: 160px;
+  height: 170px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Вміст зверху */
+  align-items: center;
   overflow: hidden;
   position: relative;
 }
+
+
 
 .shop-card:active {
   transform: scale(0.9);
@@ -643,9 +670,27 @@ img {
 .shop-card-img {
   width: 100%;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 12px;
   margin-bottom: 8px;
+}
+
+.shop-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  text-align: center;
+}
+
+.shop-card-content p {
+  margin: 2px 0;
+  font-size: 10px;
+  line-height: 1.2;
 }
 
 .shop-title {
@@ -667,6 +712,7 @@ img {
   color: #4caf50;
   font-weight: bold;
   font-size: 10px;
+  gap: 6px;
 }
 
 .shop-container {
@@ -677,4 +723,77 @@ img {
   flex-direction: column;
   gap: 6px;
   padding-right: 0px;
+}
+
+.achievements-loading {
+  color: white;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.achievements {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 16px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.achievements-header,
+.achievements-row {
+  display: grid;
+  grid-template-columns: 30px 2fr 1fr; /* 3 колонки: іконка, назва, статус */
+  gap: 6px;
+  padding: 12px 12px;
+  border-radius: 12px;
+  background-color: #ffffff15;
+  color: #fff;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  text-align: center;
+}
+
+.achievements-header {
+  background-color: #333;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.achievements-row span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.achievements-completed {
+  background-color: #85097a94; /* Фіолетовий для виконаних */
+}
+
+.achievements-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 0px;
+}
+
+.achievements-title-img {
+  width: 100%;
+  max-width: 300px;
+  height: 80px;
+  margin: 0 auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }

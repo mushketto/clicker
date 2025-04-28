@@ -161,9 +161,7 @@ export default function MainPage({ userId, db, initialized }) {
           </div>
         )}
 
-        <div className="logo-image-wrapper">
-          <img src={logoImg} alt="TapStorm" className="main-title-img" />
-        </div>
+        <div className="logo-image-wrapper"style={{ backgroundImage: `url(${logoImg})` }} />
 
         <div className="clicker-container">
           <p className="clicker-text">Монети: <strong>{count ?? 0}</strong></p>
@@ -199,9 +197,10 @@ export default function MainPage({ userId, db, initialized }) {
         </div>
 
         <div className="button-group fade-in">
-          <Link to="/upgrade"><button className="menu-button">🛠 Покращення</button></Link>
-          <Link to="/shop"><button className="menu-button">🛒 Магазин</button></Link>
-          <Link to="/leaderboard"><button className="menu-button">🏆 Топ</button></Link>
+          <Link to="/upgrade"><button className="menu-button">Покращення</button></Link>
+          <Link to="/shop"><button className="menu-button">Магазин</button></Link>
+          <Link to="/achievements"><button className="menu-button">Досягнення</button></Link>
+          <Link to="/leaderboard"><button className="menu-button">Топ</button></Link>
         </div>
       </div>
     </>

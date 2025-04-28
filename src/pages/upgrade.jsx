@@ -128,9 +128,7 @@ export default function UpgradePage({ userId, db, initialized }) {
         </div>
       </div>
       <div className="wrapper">
-      <div className="logo-image-wrapper">
-        <img src={logoUpgrade} alt="TapStorm" className="main-title-img" />
-      </div>
+      <div className="upgrade-image-wrapper"style={{ backgroundImage: `url(${logoUpgrade})` }} />
       <p className="clicker-text">Монети: <strong>{localCount ?? '...'}</strong></p>
 
       <div className="upgrade-grid">
@@ -140,7 +138,7 @@ export default function UpgradePage({ userId, db, initialized }) {
             className="upgrade-card"
             onClick={() => handleBuy(type)}
           >
-            <img src={bg} alt={title} className="upgrade-card-img" />
+            <div className="upgrade-card-img" style={{ backgroundImage: `url(${bg})` }} />
             <p className="upgrade-title">{title}</p>
             {desc.split('\n').map((line, idx) => (
               <p key={idx}>{line}</p>

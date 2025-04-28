@@ -126,12 +126,8 @@ export default function LeaderboardPage({ userId, db, initialized }) {
       {/* Основний контент */}
       <div className="wrapper">
 
-
         <div className="leaderboard">
-        <div className="leaderboard-image-wrapper">
-          <img src={leaderboardpng} alt="Топ гравців" className="leaderboard-title-img" />
-        </div>
-
+        <div className="leaderboard-title-img"style={{ backgroundImage: `url(${leaderboardpng})` }} />
           <div className="leaderboard-header">
             <span>🏅</span>
             <span>Ім’я</span>

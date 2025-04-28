@@ -7,6 +7,28 @@ const BASE_REGEN = 1;
 const ENERGY_REGEN_INTERVAL_MS = 1000;
 const SAVE_ENERGY_INTERVAL_MS = 10000;
 
+
+const ACHIEVEMENTS = [
+  { id: 'click_1000', label: '1 000 кліків', condition: ({ totalCount }) => totalCount >= 1000 },
+  { id: 'click_10000', label: '10 000 кліків', condition: ({ totalCount }) => totalCount >= 10000 },
+  { id: 'click_100000', label: '100 000 кліків', condition: ({ totalCount }) => totalCount >= 100000 },
+  { id: 'click_500000', label: '500 000 кліків', condition: ({ totalCount }) => totalCount >= 500000 },
+  { id: 'click_1000000', label: '1 000 000 кліків', condition: ({ totalCount }) => totalCount >= 1000000 },
+  { id: 'upgrade_multiplier_lvl5', label: 'Множник lvl 5', condition: ({ multiplier }) => multiplier >= 5 },
+  { id: 'upgrade_multiplier_lvl120', label: 'Множник lvl 20', condition: ({ multiplier }) => multiplier >= 15 },
+  { id: 'upgrade_energy_lvl5', label: 'Енергія рівень 5', condition: ({ maxEnergyLevel }) => maxEnergyLevel >= 5 },
+  { id: 'upgrade_energy_lvl20', label: 'Енергія рівень 20', condition: ({ maxEnergyLevel }) => maxEnergyLevel >= 20 },
+  { id: 'upgrade_regen_lvl5', label: 'Регенерація рівень 20', condition: ({ regenSpeedLevel }) => regenSpeedLevel >= 5 },
+  { id: 'upgrade_regen_lvl20', label: 'Регенерація рівень 20', condition: ({ regenSpeedLevel }) => regenSpeedLevel >= 20 },
+];
+
+const ACHIEVEMENT_SKIN_REWARDS = {
+  'click_1000000': 'gradient1',   
+  'upgrade_multiplier_lvl120': 'gradient2',  
+  'upgrade_energy_lvl20': 'gradient3', 
+};
+
+
 export function useMainStats({ db, userId, initialized }) {
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
@@ -20,7 +42,10 @@ export function useMainStats({ db, userId, initialized }) {
   const [pendingSave, setPendingSave] = useState(false);
   const [ownedSkins, setOwnedSkins] = useState([]);
   const [selectedSkin, setSelectedSkin] = useState(null);
+  const [achievements, setAchievements] = useState([]);
 
+
+  
   const localKey = `mainStats_${userId}`;
   const isReady = userId && db && initialized;
   const lastEnergySaveTime = useRef(Date.now());
@@ -53,7 +78,7 @@ export function useMainStats({ db, userId, initialized }) {
 
         const [
           countDoc, multDoc, totalDoc, usernameDoc, energyDoc,
-          maxLevelDoc, regenLevelDoc, userDoc
+          maxLevelDoc, regenLevelDoc, userDoc, achievementsDoc
         ] = await Promise.all([
           getStatsRef('count').get(),
           getStatsRef('multiplier').get(),
@@ -61,8 +86,9 @@ export function useMainStats({ db, userId, initialized }) {
           getStatsRef('username').get(),
           getStatsRef('energy').get(),
           getStatsRef('maxEnergyLevel').get(),
-          getStatsRef('regenSpeedLevel').get(),
-          getUserRef().get()
+          getStatsRef('regenSpeedLevel').get(), 
+          getUserRef().get(),
+          getStatsRef('achievements').get()
         ]);
 
         const countVal = countDoc.exists ? countDoc.data().value : 0;
@@ -71,6 +97,7 @@ export function useMainStats({ db, userId, initialized }) {
         const usernameVal = usernameDoc.exists ? usernameDoc.data().value : '';
         const maxLevelVal = maxLevelDoc.exists ? maxLevelDoc.data().value : 1;
         const regenLevelVal = regenLevelDoc.exists ? regenLevelDoc.data().value : 1;
+        const achievementsVal = achievementsDoc.exists ? achievementsDoc.data().value || [] : [];
 
         let energyVal = getMaxEnergy(maxLevelVal);
         const regenRate = getRegenRate(regenLevelVal);
@@ -94,6 +121,7 @@ export function useMainStats({ db, userId, initialized }) {
         setEnergy(energyVal);
         setMaxEnergyLevel(maxLevelVal);
         setRegenSpeedLevel(regenLevelVal);
+        setAchievements(achievementsVal);
         if (usernameVal) setUsername(usernameVal);
         else setShowUsernameForm(true);
 
@@ -161,7 +189,7 @@ export function useMainStats({ db, userId, initialized }) {
             energy: newEnergy,
             maxEnergyLevel,
             regenSpeedLevel,
-            selectedSkin // ✅ додано!
+            selectedSkin 
           }));
         }
   
@@ -178,7 +206,7 @@ export function useMainStats({ db, userId, initialized }) {
     username,
     maxEnergyLevel,
     regenSpeedLevel,
-    selectedSkin // ✅ додано!
+    selectedSkin 
   ]);
   
 
@@ -215,7 +243,7 @@ export function useMainStats({ db, userId, initialized }) {
         energy,
         maxEnergyLevel,
         regenSpeedLevel,
-        selectedSkin // ✅ додано!
+        selectedSkin
       }));
     }, 200);
   
@@ -226,8 +254,62 @@ export function useMainStats({ db, userId, initialized }) {
     totalCount,
     energy,
     isReady,
-    selectedSkin // ✅ додано!
+    selectedSkin
   ]);
+
+  useEffect(() => {
+    if (!isReady || !totalCount) return;
+  
+    const updateAchievements = async () => {
+      try {
+        const serverTime = firebase.firestore.FieldValue.serverTimestamp();
+  
+        const achievementsRef = getStatsRef('achievements');
+        const achievementsDoc = await achievementsRef.get();
+        const existingAchievements = achievementsDoc.exists ? achievementsDoc.data().value || [] : [];
+  
+        const unlocked = ACHIEVEMENTS
+          .filter(a => a.condition({ totalCount, energy, maxEnergyLevel, regenSpeedLevel, multiplier }))
+          .map(a => a.id);
+  
+        const newlyUnlocked = unlocked.filter(id => !existingAchievements.includes(id));
+  
+        if (newlyUnlocked.length > 0) {
+          await achievementsRef.set({
+            value: firebase.firestore.FieldValue.arrayUnion(...newlyUnlocked),
+            updatedAt: serverTime
+          }, { merge: true });
+  
+          setAchievements([...existingAchievements, ...newlyUnlocked]);
+        } else {
+          setAchievements(existingAchievements);
+        }
+  
+        // Тепер оновлюємо скіни
+        const unlockedSkins = newlyUnlocked
+          .map(id => ACHIEVEMENT_SKIN_REWARDS[id])
+          .filter(Boolean)
+          .filter(skinId => !ownedSkins.includes(skinId));
+  
+        if (unlockedSkins.length > 0) {
+          const ownedSkinsRef = getStatsRef('ownedSkins');
+          await ownedSkinsRef.set({
+            value: firebase.firestore.FieldValue.arrayUnion(...unlockedSkins),
+            updatedAt: serverTime
+          }, { merge: true });
+  
+          setOwnedSkins([...ownedSkins, ...unlockedSkins]);
+        }
+  
+      } catch (err) {
+        console.error('[ACHIEVEMENTS] Помилка при оновленні:', err);
+      }
+    };
+  
+    updateAchievements();
+  }, [totalCount, isReady, energy, maxEnergyLevel, regenSpeedLevel, multiplier, ownedSkins]);
+  
+  
   
   useEffect(() => {
     if (!isReady) return;
@@ -237,7 +319,7 @@ export function useMainStats({ db, userId, initialized }) {
       const parsed = JSON.parse(cached);
       localStorage.setItem(localKey, JSON.stringify({
         ...parsed,
-        selectedSkin // ✅ оновлено при зміні
+        selectedSkin 
       }));
     }
   }, [selectedSkin, isReady]);
@@ -288,7 +370,6 @@ export function useMainStats({ db, userId, initialized }) {
   
         const serverTime = firebase.firestore.FieldValue.serverTimestamp();
   
-        // Якщо немає скінів — встановлюємо "default" як куплений
         if (!ownedSkinsDoc.exists) {
           await ownedSkinsRef.set({
             value: ['default'],
@@ -299,7 +380,6 @@ export function useMainStats({ db, userId, initialized }) {
           setOwnedSkins(ownedSkinsDoc.data().value || []);
         }
   
-        // Якщо немає вибраного скіну — встановлюємо "default"
         if (!selectedSkinDoc.exists) {
           await selectedSkinRef.set({
             value: 'default',
@@ -369,6 +449,8 @@ export function useMainStats({ db, userId, initialized }) {
     ownedSkins,
     selectedSkin,
     buySkin,
-    selectSkin
+    selectSkin,
+    achievements,
+    setAchievements,
   };
 }
