@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
+import '../styles/upgrade.css';
 import { useMainStats } from '../hooks/useMainStats';
 import logoUpgrade from '../assets/upgrade.png';
-import multiplierImg from '../assets/up1.png';
-import maxEnergyImg from '../assets/up1.png';
-import regenSpeedImg from '../assets/up1.png';
+import multiplierImg from '../assets/multiplierclicks.png';
+import maxEnergyImg from '../assets/maxenergy.png';
+import regenSpeedImg from '../assets/energyregeneration.png';
 
 
 export default function UpgradePage({ userId, db, initialized }) {
@@ -96,7 +97,7 @@ export default function UpgradePage({ userId, db, initialized }) {
       level: localMultiplier,
       cost: multiplierCost,
       bg: multiplierImg,
-      desc: `Поточний: x${localMultiplier}\nКупити x${localMultiplier + 1} за ${multiplierCost} монет`
+      desc: `Покращити за\n ${multiplierCost} монет`
     },
     {
       type: 'maxEnergy',
@@ -104,7 +105,7 @@ export default function UpgradePage({ userId, db, initialized }) {
       level: localMaxEnergy,
       cost: maxEnergyCost,
       bg: maxEnergyImg,
-      desc: `Рівень: ${localMaxEnergy}\nЗбільшити до ${localMaxEnergy + 1} за ${maxEnergyCost} монет`
+      desc: `Покращити за\n ${maxEnergyCost} монет`
     },
     {
       type: 'regenSpeed',
@@ -112,7 +113,7 @@ export default function UpgradePage({ userId, db, initialized }) {
       level: localRegenSpeed,
       cost: regenSpeedCost,
       bg: regenSpeedImg,
-      desc: `Рівень: ${localRegenSpeed}\nПокращити до ${localRegenSpeed + 1} за ${regenSpeedCost} монет`
+      desc: `Покращити за\n ${regenSpeedCost} монет`
     },
   ];
 
@@ -130,14 +131,16 @@ export default function UpgradePage({ userId, db, initialized }) {
       <div className="wrapper">
       <div className="upgrade-image-wrapper"style={{ backgroundImage: `url(${logoUpgrade})` }} />
       <p className="clicker-text">Монети: <strong>{localCount ?? '...'}</strong></p>
-
+      <div className= "upgrade-container">
       <div className="upgrade-grid">
-        {upgrades.map(({ type, title, desc, bg }) => (
+        {upgrades.map(({ type, title, desc, bg, level, cost }) => (
           <div
             key={type}
             className="upgrade-card"
             onClick={() => handleBuy(type)}
           >
+
+            <div className="level-badge">lvl {level}</div>
             <div className="upgrade-card-img" style={{ backgroundImage: `url(${bg})` }} />
             <p className="upgrade-title">{title}</p>
             {desc.split('\n').map((line, idx) => (
@@ -147,7 +150,7 @@ export default function UpgradePage({ userId, db, initialized }) {
         ))}
       </div>
       </div>
-
+      </div>
 
       {showErrorModal && (
         <div className="modal-backdrop">

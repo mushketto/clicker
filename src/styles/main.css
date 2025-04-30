@@ -1,0 +1,156 @@
+  .clicker-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #1e1e1e;
+    color: white;
+    width: 100%;
+    max-width: 400px;
+    min-width: 200px;
+    margin: auto auto; /* top, auto sides, bottom */
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+  
+  
+  .clicker-title {
+    color: #00bcd4;
+  }
+  
+  .clicker-text {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .clicker-btn {
+    padding: 10px 20px;
+    font-size: 20px;
+    background-color: #2AABEE;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
+  }
+  
+  
+  
+  .clicker-img {
+    display: block;                  /* дозволяє margin auto працювати */
+    margin: 0 auto;             /* центрування по горизонталі + відступ знизу */
+    width: 160px;                   /* задає розмір зображення */
+    height: 160px;                  /* або auto, якщо пропорції важливі */
+    cursor: pointer;               /* показує, що елемент клікабельний */
+    user-select: none;             /* забороняє виділення */
+    transition: transform 0.1s;
+    -webkit-tap-highlight-color: transparent; /* прибирає синє підсвічування */
+    touch-action: manipulation;    /* штатна обробка події */
+    -webkit-touch-callout: none;   /* Safari */
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    pointer-events: auto;
+  
+  
+    object-fit: cover;           
+  
+    clip-path: polygon(
+      15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
+    );
+    -webkit-clip-path: polygon(
+      15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
+    );
+  }
+  
+  .clicker-img:active {
+    transform: scale(0.9);         /* ефект натискання */
+  }
+  
+  
+  .bottom-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto; /* робить push вниз */
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
+  }
+  
+  .menu-button {
+    background-color: #8e44ad;
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .menu-button:hover {
+    background-color: #9b59b6;
+  }
+
+  .clicker-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+  }
+
+  .floating-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 160px;
+    height: 160px;
+    pointer-events: none;
+  }
+  .floating-number {
+    position: absolute;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    animation: floatUp 1s ease-out forwards;
+    opacity: 0;
+    z-index: 10;
+  }
+  
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-40px);
+      opacity: 0;
+    }
+  }
+
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .modal {
+    background: rgb(10, 10, 10);
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+  }

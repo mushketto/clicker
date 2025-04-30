@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import '../App.css';
+import '../styles/leaderboard.css';
 import { useMainStats } from '../hooks/useMainStats';
 import leaderboardpng from '../assets/leaderboard.png';
 

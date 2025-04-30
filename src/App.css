@@ -30,152 +30,6 @@ img {
   pointer-events: auto;
 }
 
-.clicker-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background-color: #1e1e1e;
-  color: white;
-  width: 100%;
-  max-width: 400px;
-  min-width: 200px;
-  margin: auto auto; /* top, auto sides, bottom */
-  border-radius: 10px;
-  box-sizing: border-box;
-}
-
-
-.clicker-title {
-  color: #00bcd4;
-}
-
-.clicker-text {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.clicker-btn {
-  padding: 10px 20px;
-  font-size: 20px;
-  background-color: #2AABEE;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  margin: 10px;
-  cursor: pointer;
-}
-
-
-
-.clicker-img {
-  display: block;                  /* дозволяє margin auto працювати */
-  margin: 0 auto;             /* центрування по горизонталі + відступ знизу */
-  width: 160px;                   /* задає розмір зображення */
-  height: 160px;                  /* або auto, якщо пропорції важливі */
-  cursor: pointer;               /* показує, що елемент клікабельний */
-  user-select: none;             /* забороняє виділення */
-  transition: transform 0.1s;
-  -webkit-tap-highlight-color: transparent; /* прибирає синє підсвічування */
-  touch-action: manipulation;    /* штатна обробка події */
-  -webkit-touch-callout: none;   /* Safari */
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  pointer-events: auto;
-
-
-  object-fit: cover;           
-
-  clip-path: polygon(
-    15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
-  );
-  -webkit-clip-path: polygon(
-    15% 10%, 85% 10%, 100% 40%, 50% 100%, 0% 40%
-  );
-}
-
-.clicker-img:active {
-  transform: scale(0.9);         /* ефект натискання */
-}
-
-
-.bottom-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.upgrade-button {
-  display: block;
-  margin: 20px auto 0;
-  background-color: #8e44ad;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.upgrade-button:hover {
-  background-color: #9b59b6;
-}
-
-.upgrade-image-wrapper {
-  width: 100%;
-  max-width: 300px;
-  height: 80px;
-  margin: 20px auto;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: auto; /* робить push вниз */
-  margin-bottom: 20px;
-  flex-wrap: nowrap;
-}
-
-.menu-button {
-  background-color: #8e44ad;
-  color: white;
-  padding: 10px 10px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.menu-button:hover {
-  background-color: #9b59b6;
-}
-
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal {
-  background: rgb(10, 10, 10);
-  padding: 24px;
-  border-radius: 12px;
-  text-align: center;
-}
 
 .username-modal {
   background-color: #1a1a1a; /* темний фон */
@@ -191,7 +45,7 @@ img {
 
 .username-input {
   margin-top: 12px;
-  margin-bottom: 20px; /* новий відступ вниз */
+  margin-bottom: 20px; 
   padding: 10px 14px;
   width: 100%;
   font-size: 16px;
@@ -213,7 +67,7 @@ img {
   margin-top: 16px;
   padding: 10px 16px;
   font-size: 16px;
-  background-color: #9333ea; /* фіолетова кнопка */
+  background-color: #9333ea; 
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -222,100 +76,6 @@ img {
 
 .username-button:hover {
   background-color: #7e22ce;
-}
-
-
-.leaderboard {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-  width: 100%;
-  max-width: 800px;
-  padding: 0 16px;
-  flex: 1;
-  overflow: hidden;
-}
-
-.leaderboard-header,
-.leaderboard-row {
-  display: grid;
-  grid-template-columns: 30px 2fr 1fr; /* 3 колонки: номер, ім'я, зароблено */
-  gap: 12px;
-  padding: 12px 24px;
-  border-radius: 12px;
-  background-color: #ffffff15;
-  color: #fff;
-  font-weight: 500;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  text-align: center; /* Центрує текст всередині колонок */
-}
-
-.leaderboard-header {
-  background-color: #333;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.leaderboard-row span {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Центрування значень */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Окремо зміщуємо колонку "ЗАРОБЛЕНО" праворуч */
-.leaderboard-header span:last-child,
-.leaderboard-row span:last-child {
-  justify-content: flex-end;
-  padding-right: 8px;
-  justify-content: center;
-}
-
-.leaderboard-title-img {
-  width: 100%;
-  max-width: 300px;
-  height: 80px;
-  margin: 0 auto;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.leaderboard-container {
-  flex:1;
-  overflow-y: auto;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-right: 0px;
-}
-
-@media (max-width: 400px) {
-  .leaderboard-header,
-  .leaderboard-row {
-    font-size: 14px;
-    padding: 8px 6px;
-  }
-}
-
-.gold {
-  background-color: #ffcc00aa;
-  color: #000;
-}
-
-.silver {
-  background-color: #c0c0c0aa;
-  color: #000;
-}
-
-.bronze {
-  background-color: #cd7f32aa;
-  color: #000;
 }
 
 
@@ -368,7 +128,7 @@ img {
 .settings-button {
   position: absolute;
   top: 20px;
-  right: 10%; /* зменшив правий відступ */
+  right: 10%; 
 }
 
 
@@ -400,7 +160,6 @@ img {
   color: #ccc;
 }
 
-
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -415,11 +174,6 @@ img {
   50% {
     background-color: #ddd;
   }
-}
-
-.highlight-row {
-  background-color: #9333ea; /* м'який зелений */
-  color: black;
 }
 
 .settings-section {
@@ -472,7 +226,6 @@ img {
   margin-top: 5px;
 }
 
-
 .username-input {
   width: 100%;
   padding: 10px;
@@ -488,51 +241,6 @@ img {
   margin-left: 10px;
 }
 
-
-.clicker-wrapper {
-  position: relative;
-  width: 160px;
-  height: 160px;
-}
-
-.floating-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 160px;
-  height: 160px;
-  pointer-events: none;
-}
-
-.floating-number {
-  position: absolute;
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
-  animation: floatUp 1s ease-out forwards;
-  opacity: 0;
-  z-index: 10;
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-40px);
-    opacity: 0;
-  }
-}
-
-
-.leaderboard-image-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
 .logo-image-wrapper {
 
   width: 100%;
@@ -544,256 +252,9 @@ img {
   background-position: center;
 }
 
-
-
 .main-title-img {
   width: 100%;
   max-width: 300px;
   height: auto;
   object-fit: contain;
-}
-
-
-
-.upgrade-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 10px;
-  justify-items: center;
-}
-
-.upgrade-card {
-  -webkit-tap-highlight-color: transparent;
-  background-color: #121212;
-  border-radius: 12px;
-  color: white;
-  text-align: center;
-  padding: 0;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
-  max-width: 160px;
-  overflow: hidden;
-  position: relative;
-}
-
-.upgrade-card:active {
-  transform: scale(0.9);         /* ефект натискання */
-}
-
-.upgrade-card-img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-
-.card-overlay {
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 6px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.upgrade-card p {
-  margin: 2px 0;
-  font-size: 8px;
-}
-
-.upgrade-title {
-  font-weight: bold;
-  font-size: 10px;
-  margin-bottom: 8px;
-}
-
-.upgrade-card-img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 8px;
-}
-
-.shop-grid {
-  
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 10px;
-  justify-items: center;
-}
-
-
-.shop-title-img{ 
-  width: 100%;
-  max-width: 300px;
-  height: 80px;
-  margin: 20px auto;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.shop-card {
-  -webkit-tap-highlight-color: transparent;
-  background-color: #121212;
-  border-radius: 12px;
-  color: white;
-  text-align: center;
-  padding: 0;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
-  max-width: 160px;
-  height: 170px; 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Вміст зверху */
-  align-items: center;
-  overflow: hidden;
-  position: relative;
-}
-
-
-
-.shop-card:active {
-  transform: scale(0.9);
-}
-
-.shop-card-img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 12px;
-  margin-bottom: 8px;
-}
-
-.shop-card-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 4px;
-  text-align: center;
-}
-
-.shop-card-content p {
-  margin: 2px 0;
-  font-size: 10px;
-  line-height: 1.2;
-}
-
-.shop-title {
-  font-weight: bold;
-  font-size: 10px;
-  margin-bottom: 4px;
-}
-
-.shop-card p {
-  margin: 2px 0;
-  font-size: 8px;
-}
-
-.shop-card.selected {
-  border: 2px solid #4caf50;
-}
-
-.shop-owned {
-  color: #4caf50;
-  font-weight: bold;
-  font-size: 10px;
-  gap: 6px;
-}
-
-.shop-container {
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-right: 0px;
-}
-
-.achievements-loading {
-  color: white;
-  font-size: 18px;
-  margin-top: 20px;
-}
-
-.achievements {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 16px;
-  width: 100%;
-  max-width: 800px;
-  padding: 0 16px;
-  flex: 1;
-  overflow: hidden;
-}
-
-.achievements-header,
-.achievements-row {
-  display: grid;
-  grid-template-columns: 30px 2fr 1fr; /* 3 колонки: іконка, назва, статус */
-  gap: 6px;
-  padding: 12px 12px;
-  border-radius: 12px;
-  background-color: #ffffff15;
-  color: #fff;
-  font-weight: 500;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  text-align: center;
-}
-
-.achievements-header {
-  background-color: #333;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.achievements-row span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-
-.achievements-completed {
-  background-color: #85097a94; /* Фіолетовий для виконаних */
-}
-
-.achievements-container {
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-right: 0px;
-}
-
-.achievements-title-img {
-  width: 100%;
-  max-width: 300px;
-  height: 80px;
-  margin: 0 auto;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
 }

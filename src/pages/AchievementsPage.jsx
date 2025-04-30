@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import '../App.css';
+import '../styles/achievements.css';
 import { useMainStats } from '../hooks/useMainStats';
 import achievementspng from '../assets/achievements.png';
 

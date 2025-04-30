@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
+import '../styles/shop.css';
 import logoShop from '../assets/Shop.png';
 import defaultClickImg from '../assets/diamondpurple.png';
 import blueSkin from '../assets/bluediamond.png';
@@ -107,7 +108,7 @@ export default function ShopPage({ db, userId, initialized }) {
                 <div className="shop-card-content">
                   <p className="shop-card-title">{skin.title}</p>
                   {ownedSkins.includes(skin.id) ? (
-                    <p className="shop-owned">{selectedSkin === skin.id ? 'Обрано ✅' : 'Натисни, щоб обрати'}</p>
+                    <p className="shop-owned">{selectedSkin === skin.id ? 'Обрано' : 'Натисни, щоб обрати'}</p>
                   ) : (
                     skin.id.startsWith('gradient') ? (
                       <div className="shop-achievement">
@@ -119,7 +120,7 @@ export default function ShopPage({ db, userId, initialized }) {
                         </strong></p>
                       </div>
                     ) : (
-                      <p className="shop-cost">Купити за {skin.cost} монет</p>
+                      <p className="shop-cost">Придбати за {skin.cost} монет</p>
                     )
                   )}
 

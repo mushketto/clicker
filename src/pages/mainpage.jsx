@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../assets/logo.png';
 import '../App.css';
+import '../styles/main.css';
 import { useMainStats } from '../hooks/useMainStats';
 
 import defaultClickImg from '../assets/diamondpurple.png';

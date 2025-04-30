@@ -1,0 +1,106 @@
+.shop-grid {
+  
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px;
+    justify-items: center;
+  }
+  
+  
+  .shop-title-img{ 
+    width: 100%;
+    max-width: 300px;
+    height: 80px;
+    margin: 20px auto;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  .shop-card {
+    -webkit-tap-highlight-color: transparent;
+    background-color: #121212;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    max-width: 160px;
+    height: 170px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  
+  
+  .shop-card:active {
+    transform: scale(0.9);
+  }
+  
+  .shop-card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .shop-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    text-align: center;
+  }
+  
+  .shop-card-content p {
+    margin: 2px 0;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+  
+  .shop-title {
+    font-weight: bold;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  .shop-card p {
+    margin: 2px 0;
+    font-size: 8px;
+  }
+  
+  .shop-card.selected {
+    border: 2px solid #9333ea; 
+  }
+  
+  .shop-owned {
+    color: #9333ea; 
+    font-weight: bold;
+    font-size: 10px;
+    gap: 6px;
+  }
+  
+  .shop-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 0px;
+  }
+  
+  
