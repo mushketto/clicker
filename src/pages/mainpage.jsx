@@ -14,6 +14,8 @@ import orangeSkin from '../assets/orangediamond.png';
 import gradient1Skin from '../assets/diamondgradiend1.png';
 import gradient2Skin from '../assets/diamondgradiend2.png';
 import gradient3Skin from '../assets/diamondgradiend3.png';
+import settingsIcon from '../assets/settingsbutton.png';
+
 
 const skinImages = {
   default: defaultClickImg,
@@ -72,6 +74,18 @@ export default function MainPage({ userId, db, initialized }) {
     setEnergy,
     maxEnergyLevel,
     selectedSkin,
+    boostActive,
+    boostRemainingTime,
+    boostCooldown,
+    activateBoost,
+    formattedBoostTime,
+    formattedCooldown,
+    energyRegenCooldown,
+    handleRegenEnergy,
+    lastRegenTime,
+    formatTime,
+    formattedenergyCooldown
+
   } = useMainStats({ db, userId, initialized });
 
   // Зберігаємо default зображення у кеш
@@ -104,34 +118,46 @@ export default function MainPage({ userId, db, initialized }) {
 
   const handleClick = (e) => {
     const energyToConsume = multiplier ?? 1;
-    if (energy >= energyToConsume) {
+  
+    // Якщо бустер активний, енергія не віднімається
+    if (energy >= energyToConsume || boostActive) {
+      if (!boostActive) {
+        // Якщо бустер не активний, віднімаємо енергію
+        setEnergy((prev) => Math.max(0, prev - energyToConsume));
+      }
+  
       increment();
-      setEnergy((prev) => Math.max(0, prev - energyToConsume));
-
+  
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      showFloatingNumber(`+${energyToConsume}`, x, y);
+  
+      // Використовуємо multiplier, але множимо на 10, якщо бустер активний
+      const finalAmount = boostActive ? Math.floor(energyToConsume * 10) : Math.floor(energyToConsume);
+  
+      showFloatingNumber(`+${finalAmount}`, x, y);
     }
   };
-
+  
+  
   const showFloatingNumber = (text, x, y) => {
     const container = document.getElementById('floating-numbers-container');
     if (!container) return;
-
+  
     const number = document.createElement('div');
     number.className = 'floating-number';
     number.textContent = text;
-
+  
     const offsetX = Math.random() * 30 - 15;
     const offsetY = Math.random() * 30 - 15;
-
+  
     number.style.left = `${x + offsetX}px`;
     number.style.top = `${y + offsetY}px`;
-
+  
     container.appendChild(number);
     setTimeout(() => number.remove(), 1000);
   };
+  
 
   return (
     <>
@@ -141,7 +167,9 @@ export default function MainPage({ userId, db, initialized }) {
           {(username && imageReady) ? username : ''}
         </div>
         <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+        <Link to="/settings" className="settings-button">
+          <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+        </Link>
         </div>
       </div>
 
@@ -195,7 +223,52 @@ export default function MainPage({ userId, db, initialized }) {
           )}
 
           <p className="clicker-text"><strong>{energy ?? 0}/{(maxEnergyLevel ?? 1) * 1000}⚡️</strong></p>
+          <div className="booster-button-group">
+          <div className="booster-button-container">
+              <button
+                onClick={activateBoost}
+                disabled={boostActive || boostCooldown > 0}
+                className={`booster-button 
+                  ${boostActive ? 'active' : ''}
+                  ${boostCooldown > 0 ? 'cooldown' : ''}
+                  ${!boostActive && boostCooldown === 0 ? 'ready' : ''}
+                `}
+              >
+                {boostActive ? (
+                  <>
+                    <span>Буст активний</span>
+                    <span className="cooldown-timer">{formattedBoostTime}</span>
+                  </>
+                ) : boostCooldown > 0 ? (
+                  <>
+                    <span>Тимчасовий множник</span>
+                    <span className="cooldown-timer">{formattedCooldown}</span>
+                  </>
+                ) : (
+                  <span>Тимчасовий множник</span>
+                )}
+              </button>
+            </div>
+
+
+            {/* Кнопка для відновлення енергії */}
+            <div className="booster-button-container">
+              <button
+                onClick={handleRegenEnergy}
+                disabled={energyRegenCooldown > 0}
+                className={`booster-button
+                  ${energyRegenCooldown > 0 ? 'cooldown' : 'ready'}
+                `}
+              >
+              <span>Відновлення енергії</span>
+              {energyRegenCooldown > 0 && (
+                <span className="cooldown-timer">{formattedenergyCooldown}</span>
+              )}
+              </button>
+            </div>
+          </div>
         </div>
+
 
         <div className="button-group fade-in">
           <Link to="/upgrade"><button className="menu-button">Покращення</button></Link>

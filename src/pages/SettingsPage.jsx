@@ -27,7 +27,7 @@ export default function SettingsPage({ db, userId, initialized }) {
       </div>
 
       <div className="wrapper">
-        <h2 className="clicker-text">⚙️ Налаштування</h2>
+        <h2 className="clicker-text">Налаштування</h2>
 
         <div className="settings-section">
             <p className="clicker-text">ID: <strong>{userId}</strong></p>

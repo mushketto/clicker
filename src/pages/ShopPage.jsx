@@ -13,6 +13,7 @@ import gradient1Skin from '../assets/diamondgradiend1.png';
 import gradient2Skin from '../assets/diamondgradiend2.png';
 import gradient3Skin from '../assets/diamondgradiend3.png';
 import { useMainStats } from '../hooks/useMainStats';
+import settingsIcon from '../assets/settingsbutton.png';
 
 export default function ShopPage({ db, userId, initialized }) {
   const {
@@ -89,7 +90,9 @@ export default function ShopPage({ db, userId, initialized }) {
           <Link to="/" className="header-button">←</Link>
         </div>
         <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+          <Link to="/settings" className="settings-button">
+            <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+          </Link>
         </div>
       </div>
 

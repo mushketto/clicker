@@ -3,6 +3,7 @@ import '../App.css';
 import '../styles/achievements.css';
 import { useMainStats } from '../hooks/useMainStats';
 import achievementspng from '../assets/achievements.png';
+import settingsIcon from '../assets/settingsbutton.png';
 
 const ACHIEVEMENTS = [
   { id: 'click_1000', label: '1 000 кліків' },
@@ -29,7 +30,9 @@ export default function MyAchievementsPage({ userId, db, initialized }) {
             <Link to="/" className="header-button">←</Link>
           </div>
           <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+            <Link to="/settings" className="settings-button">
+              <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+            </Link>
           </div>
         </div>
         <div className="avhievements-title-img"style={{ backgroundImage: `url(${achievementspng})` }} />
@@ -46,7 +49,9 @@ export default function MyAchievementsPage({ userId, db, initialized }) {
           <Link to="/" className="header-button">←</Link>
         </div>
         <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+          <Link to="/settings" className="settings-button">
+            <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+          </Link>          
         </div>
       </div>
   

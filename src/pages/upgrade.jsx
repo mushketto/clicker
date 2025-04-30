@@ -7,6 +7,7 @@ import logoUpgrade from '../assets/upgrade.png';
 import multiplierImg from '../assets/multiplierclicks.png';
 import maxEnergyImg from '../assets/maxenergy.png';
 import regenSpeedImg from '../assets/energyregeneration.png';
+import settingsIcon from '../assets/settingsbutton.png';
 
 
 export default function UpgradePage({ userId, db, initialized }) {
@@ -125,7 +126,9 @@ export default function UpgradePage({ userId, db, initialized }) {
         </div>
         <div className="header-center"></div>
         <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+          <Link to="/settings" className="settings-button">
+            <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+          </Link>
         </div>
       </div>
       <div className="wrapper">

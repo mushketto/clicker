@@ -4,6 +4,7 @@ import '../App.css';
 import '../styles/leaderboard.css';
 import { useMainStats } from '../hooks/useMainStats';
 import leaderboardpng from '../assets/leaderboard.png';
+import settingsIcon from '../assets/settingsbutton.png';
 
 export default function LeaderboardPage({ userId, db, initialized }) {
   const [leaders, setLeaders] = useState([]);
@@ -120,7 +121,9 @@ export default function LeaderboardPage({ userId, db, initialized }) {
         </div>
 
         <div className="header-right">
-          <Link to="/settings" className="settings-button">⚙️</Link>
+          <Link to="/settings" className="settings-button">
+            <div className="settings-icon" style={{ backgroundImage: `url(${settingsIcon})` }} />
+          </Link>
         </div>
       </div>
 
