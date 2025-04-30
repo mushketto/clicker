@@ -12,9 +12,9 @@ import SettingsPage from './pages/SettingsPage';
 import AchivementsPage from './pages/AchievementsPage'; 
 
 function App() {
-  const userId = 7777777777; 
+  //const userId = 7777777777; 
   const userId = useTelegramInit();
-  //const { initialized, db } = useFirebase();
+  const { initialized, db } = useFirebase();
 
   const isReady = userId && initialized && db;
 
