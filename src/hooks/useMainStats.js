@@ -6,7 +6,7 @@ const BASE_ENERGY = 1000;
 const BASE_REGEN = 1;
 const ENERGY_REGEN_INTERVAL_MS = 1000;
 const SAVE_ENERGY_INTERVAL_MS = 10000;
-const REGEN_ENERGY_COOLDOWN = 1800; // 30 хвилин у секундах
+const REGEN_ENERGY_COOLDOWN = 1800; 
 
 const ACHIEVEMENTS = [
   { id: 'click_1000', label: '1 000 кліків', condition: ({ totalCount }) => totalCount >= 1000 },
@@ -247,11 +247,6 @@ export function useMainStats({ db, userId, initialized }) {
   const increment = () => {
     // Якщо енергія менша за 0, не продовжуємо
     if (energy <= 0) return;
-  
-    // Якщо бустер активний, енергія не віднімається
-    if (!boostActive) {
-      setEnergy(prev => Math.max(0, prev - 1)); // Віднімаємо 1 енергію, якщо бустер не активний
-    }
   
     // Враховуємо активний буст
     const effectiveMultiplier = boostActive ? multiplier * 10 : multiplier;
