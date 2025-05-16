@@ -5,15 +5,15 @@ import './App.css';
 
 
 import MainPage from './pages/mainpage';
-import UpgradePage from './pages/upgrade';
-import LeaderboardPage from './pages/leaderboard';
+import UpgradePage from './pages/UpgradePage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import ShopPage from './pages/ShopPage';
 import SettingsPage from './pages/SettingsPage'; 
 import AchivementsPage from './pages/AchievementsPage'; 
 
 function App() {
-  //const userId = 7777777777; 
-  const userId = useTelegramInit();
+  const userId = 7777777777; 
+  //const userId = useTelegramInit();
   const { initialized, db } = useFirebase();
 
   const isReady = userId && initialized && db;

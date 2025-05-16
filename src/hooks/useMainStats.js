@@ -51,7 +51,6 @@ export function useMainStats({ db, userId, initialized }) {
 
   const [energyRegenCooldown, setEnergyRegenCooldown] = useState(0);
   const [lastRegenTime, setLastRegenTime] = useState(null);
-  const [energyRegenCooldownRemaining, setEnergyRegenCooldownRemaining] = useState(0);
   
   const localKey = `mainStats_${userId}`;
   const isReady = userId && db && initialized;
@@ -245,13 +244,11 @@ export function useMainStats({ db, userId, initialized }) {
   
 
   const increment = () => {
-    // Якщо енергія менша за 0, не продовжуємо
     if (energy <= 0) return;
   
-    // Враховуємо активний буст
+
     const effectiveMultiplier = boostActive ? multiplier * 10 : multiplier;
   
-    // Збільшуємо рахунок із застосуванням множника
     setCount(prev => prev + effectiveMultiplier);
     setTotalCount(prev => prev + effectiveMultiplier);
   
@@ -501,8 +498,8 @@ export function useMainStats({ db, userId, initialized }) {
     const now = Date.now();
     if (boostCooldown > 0 || boostActive) return;
   
-    const boostDuration = 30 * 1000; // 30 сек у мс
-    const cooldownDuration = 3600 * 1000; // 1 година у мс
+    const boostDuration = 30 * 1000; 
+    const cooldownDuration = 3600 * 1000; 
   
     const endsAt = now + boostDuration;
     const cooldownEndsAt = endsAt + cooldownDuration;
@@ -510,8 +507,7 @@ export function useMainStats({ db, userId, initialized }) {
     setBoostActive(true);
     setBoostRemainingTime(30);
     setBoostCooldown(3600);
-  
-    // записуємо абсолютні значення
+
     getStatsRef('boost').set({
       active: true,
       boostEndsAt: new Date(endsAt),
@@ -556,12 +552,10 @@ export function useMainStats({ db, userId, initialized }) {
           const timePassed = Math.floor((Date.now() - lastTime) / 1000);
           const cooldownLeft = Math.max(REGEN_ENERGY_COOLDOWN - timePassed, 0);
           
-          // Форматуємо час кулдауну в MM:SS
           const formattedCooldown = formatTime(cooldownLeft);
           
-          // Оновлюємо стан для відображення
           setLastRegenTime(lastTime);
-          setEnergyRegenCooldown(cooldownLeft); // Залишаємо числове значення для перевірок
+          setEnergyRegenCooldown(cooldownLeft); 
         }
       }
     } catch (error) {
@@ -582,12 +576,10 @@ export function useMainStats({ db, userId, initialized }) {
     const serverTime = firebase.firestore.FieldValue.serverTimestamp();
     const maxEnergy = getMaxEnergy(maxEnergyLevel);
     
-    // 🔼 Оновлення локального стану
     setEnergy(maxEnergy);
     setLastRegenTime(now);
     setEnergyRegenCooldown(REGEN_ENERGY_COOLDOWN);
   
-    // 🔼 Оновлення в базі
     await getStatsRef('energy').set({
       value: maxEnergy,
       updatedAt: serverTime,
