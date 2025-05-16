@@ -4,6 +4,8 @@ import logoImg from '../assets/logo.png';
 import '../App.css';
 import '../styles/main.css';
 import { useMainStats } from '../hooks/useMainStats';
+import { useSkins } from '../hooks/useSkins';
+import { useBoosts } from '../hooks/useBoosts';
 
 import defaultClickImg from '../assets/diamondpurple.png';
 import blueSkin from '../assets/bluediamond.png';
@@ -15,7 +17,6 @@ import gradient1Skin from '../assets/diamondgradiend1.png';
 import gradient2Skin from '../assets/diamondgradiend2.png';
 import gradient3Skin from '../assets/diamondgradiend3.png';
 import settingsIcon from '../assets/settingsbutton.png';
-
 
 const skinImages = {
   default: defaultClickImg,
@@ -68,12 +69,25 @@ export default function MainPage({ userId, db, initialized }) {
     username,
     showUsernameForm,
     setShowUsernameForm,
-    increment,
     saveUsername,
     energy,
     setEnergy,
     maxEnergyLevel,
+    setPendingSave,
+    setCount,
+    setTotalCount,
+
+  } = useMainStats({ db, userId, initialized });
+
+  const {
+
     selectedSkin,
+
+  } = useSkins({ db, userId, initialized });
+
+  
+
+  const {
     boostActive,
     boostRemainingTime,
     boostCooldown,
@@ -85,10 +99,22 @@ export default function MainPage({ userId, db, initialized }) {
     lastRegenTime,
     formatTime,
     formattedenergyCooldown
+    
 
-  } = useMainStats({ db, userId, initialized });
+  } = useBoosts({ db, userId, initialized });
+  // Зберігаємо default зображення у кеш  
+       const increment = () => {
+        if (energy <= 0) return;
+      
 
-  // Зберігаємо default зображення у кеш
+        const effectiveMultiplier = boostActive ? multiplier * 10 : multiplier;
+      
+        setCount(prev => prev + effectiveMultiplier);
+        setTotalCount(prev => prev + effectiveMultiplier);
+      
+        setPendingSave(true);
+        };
+  
   useEffect(() => {
     const storeDefaultImageInCache = async () => {
       const existing = localStorage.getItem('clickImage_default');
@@ -125,7 +151,6 @@ export default function MainPage({ userId, db, initialized }) {
         // Якщо бустер не активний, віднімаємо енергію
         setEnergy((prev) => Math.max(0, prev - energyToConsume));
       }
-  
       increment();
   
       const rect = e.currentTarget.getBoundingClientRect();

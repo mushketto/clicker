@@ -1,32 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import { useBoosts } from './useBoosts';
 
 const BASE_ENERGY = 1000;
 const BASE_REGEN = 1;
 const ENERGY_REGEN_INTERVAL_MS = 1000;
 const SAVE_ENERGY_INTERVAL_MS = 10000;
-const REGEN_ENERGY_COOLDOWN = 1800; 
-
-const ACHIEVEMENTS = [
-  { id: 'click_1000', label: '1 000 кліків', condition: ({ totalCount }) => totalCount >= 1000 },
-  { id: 'click_10000', label: '10 000 кліків', condition: ({ totalCount }) => totalCount >= 10000 },
-  { id: 'click_100000', label: '100 000 кліків', condition: ({ totalCount }) => totalCount >= 100000 },
-  { id: 'click_500000', label: '500 000 кліків', condition: ({ totalCount }) => totalCount >= 500000 },
-  { id: 'click_1000000', label: '1 000 000 кліків', condition: ({ totalCount }) => totalCount >= 1000000 },
-  { id: 'upgrade_multiplier_lvl5', label: 'Множник lvl 5', condition: ({ multiplier }) => multiplier >= 5 },
-  { id: 'upgrade_multiplier_lvl120', label: 'Множник lvl 20', condition: ({ multiplier }) => multiplier >= 15 },
-  { id: 'upgrade_energy_lvl5', label: 'Енергія рівень 5', condition: ({ maxEnergyLevel }) => maxEnergyLevel >= 5 },
-  { id: 'upgrade_energy_lvl20', label: 'Енергія рівень 20', condition: ({ maxEnergyLevel }) => maxEnergyLevel >= 20 },
-  { id: 'upgrade_regen_lvl5', label: 'Регенерація рівень 20', condition: ({ regenSpeedLevel }) => regenSpeedLevel >= 5 },
-  { id: 'upgrade_regen_lvl20', label: 'Регенерація рівень 20', condition: ({ regenSpeedLevel }) => regenSpeedLevel >= 20 },
-];
-
-const ACHIEVEMENT_SKIN_REWARDS = {
-  'click_1000000': 'gradient1',   
-  'upgrade_multiplier_lvl120': 'gradient2',  
-  'upgrade_energy_lvl20': 'gradient3', 
-};
 
 
 export function useMainStats({ db, userId, initialized }) {
@@ -40,18 +20,7 @@ export function useMainStats({ db, userId, initialized }) {
   const [regenSpeedLevel, setRegenSpeedLevel] = useState(1);
   const [showUsernameForm, setShowUsernameForm] = useState(false);
   const [pendingSave, setPendingSave] = useState(false);
-  const [ownedSkins, setOwnedSkins] = useState([]);
-  const [selectedSkin, setSelectedSkin] = useState(null);
-  const [achievements, setAchievements] = useState([]);
 
-  const [boostActive, setBoostActive] = useState(false);
-  const [boostRemainingTime, setBoostRemainingTime] = useState(0);
-  const [boostCooldown, setBoostCooldown] = useState(0);
-  const [lastBoostTime, setLastBoostTime] = useState(0);
-
-  const [energyRegenCooldown, setEnergyRegenCooldown] = useState(0);
-  const [lastRegenTime, setLastRegenTime] = useState(null);
-  
   const localKey = `mainStats_${userId}`;
   const isReady = userId && db && initialized;
   const lastEnergySaveTime = useRef(Date.now());
@@ -59,6 +28,7 @@ export function useMainStats({ db, userId, initialized }) {
   const getStatsRef = (field) =>
     db.collection('users').doc(String(userId)).collection('stats').doc(field);
   const getUserRef = () => db.collection('users').doc(String(userId));
+
 
   const getMaxEnergy = (level) => BASE_ENERGY * level;
   const getRegenRate = (level) => BASE_REGEN * level;
@@ -79,12 +49,11 @@ export function useMainStats({ db, userId, initialized }) {
           setEnergy(parsed.energy ?? BASE_ENERGY);
           setMaxEnergyLevel(parsed.maxEnergyLevel ?? 1);
           setRegenSpeedLevel(parsed.regenSpeedLevel ?? 1);
-          setSelectedSkin(parsed.selectedSkin ?? null);
         }
 
         const [
           countDoc, multDoc, totalDoc, usernameDoc, energyDoc,
-          maxLevelDoc, regenLevelDoc, userDoc, achievementsDoc, boostDoc, regenCooldownDoc
+          maxLevelDoc, regenLevelDoc, userDoc
         ] = await Promise.all([
           getStatsRef('count').get(),
           getStatsRef('multiplier').get(),
@@ -94,9 +63,6 @@ export function useMainStats({ db, userId, initialized }) {
           getStatsRef('maxEnergyLevel').get(),
           getStatsRef('regenSpeedLevel').get(), 
           getUserRef().get(),
-          getStatsRef('achievements').get(),
-          getStatsRef('boost').get(),
-          getStatsRef('energyRegenCooldown').get()
         ]);
 
         const countVal = countDoc.exists ? countDoc.data().value : 0;
@@ -105,7 +71,6 @@ export function useMainStats({ db, userId, initialized }) {
         const usernameVal = usernameDoc.exists ? usernameDoc.data().value : '';
         const maxLevelVal = maxLevelDoc.exists ? maxLevelDoc.data().value : 1;
         const regenLevelVal = regenLevelDoc.exists ? regenLevelDoc.data().value : 1;
-        const achievementsVal = achievementsDoc.exists ? achievementsDoc.data().value || [] : [];
 
         let energyVal = getMaxEnergy(maxLevelVal);
         const regenRate = getRegenRate(regenLevelVal);
@@ -123,29 +88,6 @@ export function useMainStats({ db, userId, initialized }) {
           }
         }
         
-        const boostData = boostDoc.exists ? boostDoc.data() : {};
-        const now = Date.now();
-        let boostStillActive = false;
-        let newBoostRemaining = 0;
-        let newBoostCooldown = 0;
-        
-        if (boostData.boostEndsAt?.toMillis) {
-          const endsAt = boostData.boostEndsAt.toMillis();
-          const remaining = Math.floor((endsAt - now) / 1000);
-          boostStillActive = remaining > 0;
-          newBoostRemaining = Math.max(remaining, 0);
-        }
-        
-        if (boostData.boostCooldownEndsAt?.toMillis) {
-          const cooldownEndsAt = boostData.boostCooldownEndsAt.toMillis();
-          const remainingCooldown = Math.floor((cooldownEndsAt - now) / 1000);
-          newBoostCooldown = Math.max(remainingCooldown, 0);
-        }
-        
-        setBoostActive(boostStillActive);
-        setBoostRemainingTime(newBoostRemaining);
-        setBoostCooldown(newBoostCooldown);
-        
 
         setCount(countVal);
         setTotalCount(totalVal);
@@ -153,10 +95,8 @@ export function useMainStats({ db, userId, initialized }) {
         setEnergy(energyVal);
         setMaxEnergyLevel(maxLevelVal);
         setRegenSpeedLevel(regenLevelVal);
-        setAchievements(achievementsVal);
         if (usernameVal) setUsername(usernameVal);
         else setShowUsernameForm(true);
-        await fetchRegenCooldown();
         
         const serverTime = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -179,7 +119,6 @@ export function useMainStats({ db, userId, initialized }) {
           energy: energyVal,
           maxEnergyLevel: maxLevelVal,
           regenSpeedLevel: regenLevelVal,
-          selectedSkin
         }));
 
       } catch (err) {
@@ -222,7 +161,6 @@ export function useMainStats({ db, userId, initialized }) {
             energy: newEnergy,
             maxEnergyLevel,
             regenSpeedLevel,
-            selectedSkin 
           }));
         }
   
@@ -239,21 +177,8 @@ export function useMainStats({ db, userId, initialized }) {
     username,
     maxEnergyLevel,
     regenSpeedLevel,
-    selectedSkin 
   ]);
   
-
-  const increment = () => {
-    if (energy <= 0) return;
-  
-
-    const effectiveMultiplier = boostActive ? multiplier * 10 : multiplier;
-  
-    setCount(prev => prev + effectiveMultiplier);
-    setTotalCount(prev => prev + effectiveMultiplier);
-  
-    setPendingSave(true);
-  };
   
   
   useEffect(() => {
@@ -281,7 +206,6 @@ export function useMainStats({ db, userId, initialized }) {
         energy,
         maxEnergyLevel,
         regenSpeedLevel,
-        selectedSkin
       }));
     }, 200);
   
@@ -292,75 +216,8 @@ export function useMainStats({ db, userId, initialized }) {
     totalCount,
     energy,
     isReady,
-    selectedSkin
   ]);
 
-  useEffect(() => {
-    if (!isReady || !totalCount) return;
-  
-    const updateAchievements = async () => {
-      try {
-        const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-  
-        const achievementsRef = getStatsRef('achievements');
-        const achievementsDoc = await achievementsRef.get();
-        const existingAchievements = achievementsDoc.exists ? achievementsDoc.data().value || [] : [];
-  
-        const unlocked = ACHIEVEMENTS
-          .filter(a => a.condition({ totalCount, energy, maxEnergyLevel, regenSpeedLevel, multiplier }))
-          .map(a => a.id);
-  
-        const newlyUnlocked = unlocked.filter(id => !existingAchievements.includes(id));
-  
-        if (newlyUnlocked.length > 0) {
-          await achievementsRef.set({
-            value: firebase.firestore.FieldValue.arrayUnion(...newlyUnlocked),
-            updatedAt: serverTime
-          }, { merge: true });
-  
-          setAchievements([...existingAchievements, ...newlyUnlocked]);
-        } else {
-          setAchievements(existingAchievements);
-        }
-  
-        // Тепер оновлюємо скіни
-        const unlockedSkins = newlyUnlocked
-          .map(id => ACHIEVEMENT_SKIN_REWARDS[id])
-          .filter(Boolean)
-          .filter(skinId => !ownedSkins.includes(skinId));
-  
-        if (unlockedSkins.length > 0) {
-          const ownedSkinsRef = getStatsRef('ownedSkins');
-          await ownedSkinsRef.set({
-            value: firebase.firestore.FieldValue.arrayUnion(...unlockedSkins),
-            updatedAt: serverTime
-          }, { merge: true });
-  
-          setOwnedSkins([...ownedSkins, ...unlockedSkins]);
-        }
-  
-      } catch (err) {
-        console.error('[ACHIEVEMENTS] Помилка при оновленні:', err);
-      }
-    };
-  
-    updateAchievements();
-  }, [totalCount, isReady, energy, maxEnergyLevel, regenSpeedLevel, multiplier, ownedSkins]);
-  
-  
-  
-  useEffect(() => {
-    if (!isReady) return;
-  
-    const cached = localStorage.getItem(localKey);
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      localStorage.setItem(localKey, JSON.stringify({
-        ...parsed,
-        selectedSkin 
-      }));
-    }
-  }, [selectedSkin, isReady]);
   
   const saveUsername = async (usernameInput) => {
     if (!usernameInput.trim()) return;
@@ -394,223 +251,20 @@ export function useMainStats({ db, userId, initialized }) {
     setRegenSpeedLevel(newLevel);
   };
 
-  useEffect(() => {
-    if (!isReady) return;
-  
-    const fetchSkins = async () => {
-      try {
-        const ownedSkinsRef = getStatsRef('ownedSkins');
-        const selectedSkinRef = getStatsRef('selectedSkin');
-        const [ownedSkinsDoc, selectedSkinDoc] = await Promise.all([
-          ownedSkinsRef.get(),
-          selectedSkinRef.get()
-        ]);
-  
-        const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-  
-        if (!ownedSkinsDoc.exists) {
-          await ownedSkinsRef.set({
-            value: ['default'],
-            createdAt: serverTime
-          });
-          setOwnedSkins(['default']);
-        } else {
-          setOwnedSkins(ownedSkinsDoc.data().value || []);
-        }
-  
-        if (!selectedSkinDoc.exists) {
-          await selectedSkinRef.set({
-            value: 'default',
-            createdAt: serverTime
-          });
-          setSelectedSkin('default');
-        } else {
-          setSelectedSkin(selectedSkinDoc.data().value || null);
-        }
-      } catch (err) {
-        console.error('[STORE] Помилка при завантаженні скінів:', err);
-      }
-    };
-  
-    fetchSkins();
-  }, [isReady]);  
-
-  const buySkin = async (skinId, cost) => {
-    if (ownedSkins.includes(skinId)) return;
-    if (count < cost) return;
-
-    const newSkins = [...ownedSkins, skinId];
-    const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-
-    await getStatsRef('ownedSkins').set({
-      value: newSkins,
-      updatedAt: serverTime
-    }, { merge: true });
-
-    setOwnedSkins(newSkins);
-    setCount(prev => prev - cost);
-  };
-
-  const selectSkin = async (skinId) => {
-    if (!ownedSkins.includes(skinId)) return;
-
-    const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-    await getStatsRef('selectedSkin').set({
-      value: skinId,
-      updatedAt: serverTime
-    }, { merge: true });
-
-    setSelectedSkin(skinId);
-  };
-  
-  useEffect(() => {
-    if (!isReady || !boostActive) return;
-
-    const updateBoost = async () => {
-      const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-
-      await getStatsRef('boost').set({
-        active: boostActive,
-        remainingTime: boostRemainingTime,
-        cooldown: boostCooldown,
-        updatedAt: serverTime,
-      }, { merge: true });
-
-      localStorage.setItem(localKey, JSON.stringify({
-        count,
-        totalCount,
-        multiplier,
-        username,
-        energy,
-        maxEnergyLevel,
-        regenSpeedLevel,
-        selectedSkin,
-        boostActive,
-        boostRemainingTime,
-        boostCooldown,
-      }));
-    };
-
-    updateBoost();
-  }, [boostActive, boostRemainingTime, boostCooldown, isReady]);
-
-  const activateBoost = () => {
-    const now = Date.now();
-    if (boostCooldown > 0 || boostActive) return;
-  
-    const boostDuration = 30 * 1000; 
-    const cooldownDuration = 3600 * 1000; 
-  
-    const endsAt = now + boostDuration;
-    const cooldownEndsAt = endsAt + cooldownDuration;
-  
-    setBoostActive(true);
-    setBoostRemainingTime(30);
-    setBoostCooldown(3600);
-
-    getStatsRef('boost').set({
-      active: true,
-      boostEndsAt: new Date(endsAt),
-      boostCooldownEndsAt: new Date(cooldownEndsAt),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
-  };
-  
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (boostActive) {
-        setBoostRemainingTime(prev => Math.max(prev - 1, 0));
-        if (boostRemainingTime <= 1) {
-          setBoostActive(false);
-        }
-      } else if (boostCooldown > 0) {
-        setBoostCooldown(prev => Math.max(prev - 1, 0));
-      }
-    }, 1000);
-  
-    return () => clearInterval(interval);
-  }, [boostActive, boostRemainingTime, boostCooldown]);
-  
-
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  };
-  
-  const formattedBoostTime = formatTime(boostRemainingTime);
-  const formattedCooldown = formatTime(boostCooldown);
-
-  const fetchRegenCooldown = async () => {
-    try {
-      const doc = await getStatsRef('energyRegenCooldown').get();
-      if (doc.exists) {
-        const data = doc.data();
-        if (data?.lastRegenTime) {
-          const lastTime = data.lastRegenTime;
-          const timePassed = Math.floor((Date.now() - lastTime) / 1000);
-          const cooldownLeft = Math.max(REGEN_ENERGY_COOLDOWN - timePassed, 0);
-          
-          const formattedCooldown = formatTime(cooldownLeft);
-          
-          setLastRegenTime(lastTime);
-          setEnergyRegenCooldown(cooldownLeft); 
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch regen cooldown:', error);
-    }
-  };
-  
-  const formattedenergyCooldown = formatTime(energyRegenCooldown);
-  
-
-  const handleRegenEnergy = async () => {
-    if (energy >= getMaxEnergy(maxEnergyLevel)) return;
-  
-    const now = Date.now();
-    const cooldownEnded = !lastRegenTime || (now - lastRegenTime >= REGEN_ENERGY_COOLDOWN * 1000);
-    if (!cooldownEnded) return;
-  
-    const serverTime = firebase.firestore.FieldValue.serverTimestamp();
-    const maxEnergy = getMaxEnergy(maxEnergyLevel);
-    
-    setEnergy(maxEnergy);
-    setLastRegenTime(now);
-    setEnergyRegenCooldown(REGEN_ENERGY_COOLDOWN);
-  
-    await getStatsRef('energy').set({
-      value: maxEnergy,
-      updatedAt: serverTime,
-      lastUpdated: serverTime,
-    }, { merge: true });
-  
-    await getStatsRef('energyRegenCooldown').set({
-      lastRegenTime: now
-    }, { merge: true });
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setEnergyRegenCooldown(prev => Math.max(prev - 1, 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  
   return {
     loading,
+    setLoading,
     count,
     totalCount,
     multiplier,
     username,
     showUsernameForm,
     setShowUsernameForm,
-    increment,
     saveUsername,
     energy,
     setEnergy,
     maxEnergyLevel,
+    setTotalCount,
     regenSpeedLevel,
     upgradeMaxEnergy,
     upgradeRegenSpeed,
@@ -619,22 +273,8 @@ export function useMainStats({ db, userId, initialized }) {
     setMaxEnergyLevel,
     setRegenSpeedLevel,
     setCount,
-    ownedSkins,
-    selectedSkin,
-    buySkin,
-    selectSkin,
-    achievements,
-    setAchievements,
-    boostActive,
-    boostRemainingTime,
-    boostCooldown,
-    activateBoost,
-    formattedBoostTime,
-    formattedCooldown,
-    energyRegenCooldown,
-    handleRegenEnergy,
-    lastRegenTime,
-    formatTime,
-    formattedenergyCooldown
+    setPendingSave,
+    getMaxEnergy,
+    maxEnergyLevel 
   };
 }

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import '../App.css';
 import '../styles/achievements.css';
 import { useMainStats } from '../hooks/useMainStats';
+import { useAchievements } from '../hooks/useAchievements';
 import achievementspng from '../assets/achievements.png';
 import settingsIcon from '../assets/settingsbutton.png';
 
@@ -20,7 +21,8 @@ const ACHIEVEMENTS = [
 ];
 
 export default function MyAchievementsPage({ userId, db, initialized }) {
-  const { achievements, loading } = useMainStats({ db, userId, initialized });
+  const { loading } = useMainStats({ db, userId, initialized });
+  const { achievements } = useAchievements ({ db, userId, initialized });
 
   if (loading) {
     return (
